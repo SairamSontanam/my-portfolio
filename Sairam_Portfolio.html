@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sairam Sontanam · personal portfolio</title>
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e14;
+            color: #eef2f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        :root {
+            --bg-deep: #0a0e14;
+            --bg-card: rgba(18, 24, 30, 0.8);
+            --text-light: #f0f6fc;
+            --text-dim: #a0b0c0;
+            --gold: #d4af37;
+            --cyan: #64ffda;
+            --border-light: rgba(255,255,255,0.06);
+            --shadow-heavy: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+            --radius-card: 30px;
+            --radius-btn: 60px;
+        }
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 40px; }
+        section { position: relative; padding: 120px 0; overflow: hidden; }
+
+        /* custom cursor (desktop only) */
+        @media (pointer: fine) {
+            .cursor {
+                width: 24px;
+                height: 24px;
+                border: 2px solid var(--gold);
+                border-radius: 50%;
+                position: fixed;
+                pointer-events: none;
+                z-index: 9999;
+                mix-blend-mode: difference;
+                transition: transform 0.15s;
+                transform: translate(-50%, -50%);
+                box-shadow: 0 0 15px var(--gold);
+            }
+            .cursor.hover {
+                transform: translate(-50%, -50%) scale(1.5);
+                background: rgba(212,175,55,0.1);
+                border-color: var(--cyan);
+            }
+        }
+        @media (pointer: coarse) { .cursor { display: none; } }
+
+        /* loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0e14;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease;
+        }
+        .loading-screen .loader-container {
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        .loading-screen .loader-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--gold), var(--cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .loading-screen .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .loading-screen .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--cyan));
+            border-radius: 10px;
+            transition: width 0.05s linear;
+            box-shadow: 0 0 15px var(--gold);
+        }
+        .loading-screen .percentage {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .loading-screen .tagline {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* scrolling shapes background */
+        .scrolling-shapes {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .scrolling-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            animation: scrollShapes linear infinite;
+        }
+        .shape-a {
+            width: 600px;
+            height: 600px;
+            background: var(--gold);
+            top: -200px;
+            left: -200px;
+            animation-duration: 25s;
+            animation-direction: alternate;
+        }
+        .shape-b {
+            width: 500px;
+            height: 500px;
+            background: var(--cyan);
+            bottom: -200px;
+            right: -100px;
+            animation-duration: 30s;
+            animation-direction: alternate-reverse;
+        }
+        .shape-c {
+            width: 400px;
+            height: 400px;
+            background: var(--gold);
+            top: 40%;
+            left: 60%;
+            opacity: 0.2;
+            animation-duration: 40s;
+            animation-direction: alternate;
+        }
+        @keyframes scrollShapes {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(150px, -150px) scale(1.3); }
+        }
+
+        /* neon glow effect for headlines */
+        .glow-text {
+            text-shadow: 0 0 8px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.5);
+            transition: text-shadow 0.3s;
+        }
+        .section-title h2.glow-text:hover {
+            text-shadow: 0 0 15px rgba(212,175,55,1), 0 0 30px rgba(212,175,55,0.8);
+        }
+
+        /* typography */
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+        .section-title h2 {
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+        .section-title p {
+            font-size: 1rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            margin-top: 12px;
+        }
+
+        /* navigation */
+        nav {
+            position: fixed; width: 100%; top: 0; z-index: 100;
+            background: rgba(10,14,20,0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .nav-container {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; max-width: 1300px; margin: 0 auto;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: var(--text-light);
+            font-weight: 500; transition: 0.3s;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+        .nav-links a:hover { color: var(--gold); }
+
+        /* hero */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            text-align: center;
+            padding-top: 120px;
+        }
+        .hero h1 {
+            font-size: 5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 16px 48px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            border-radius: var(--radius-btn);
+        }
+        .btn:hover {
+            background: var(--gold);
+            color: #0a0e14;
+            transform: scale(1.05);
+        }
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: var(--cyan);
+            font-size: 1.5rem;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* experience roadmap */
+        .roadmap { max-width: 800px; margin: 0 auto; }
+        .roadmap-item {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 30px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .roadmap-item:hover {
+            transform: scale(1.02);
+            border-color: var(--gold);
+        }
+        .roadmap-year {
+            min-width: 140px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+
+        /* education grid */
+        .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .edu-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .edu-card:hover {
+            transform: scale(1.02);
+            border-color: var(--cyan);
+        }
+        .edu-card h3 { font-size: 1.8rem; margin-bottom: 8px; }
+
+        /* clients vertical */
+        .clients-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .client-card {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            padding: 40px;
+            border-radius: var(--radius-card);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .client-card:hover {
+            transform: scale(1.02);
+            border-color: var(--gold);
+        }
+        .client-icon {
+            font-size: 3.5rem;
+            color: var(--gold);
+            min-width: 100px;
+            text-align: center;
+        }
+        .client-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        .client-meta {
+            color: var(--cyan);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .client-info p {
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .client-btn {
+            background: none;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 28px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            letter-spacing: 0.1em;
+            border-radius: var(--radius-btn);
+        }
+        .client-btn:hover {
+            background: var(--gold);
+            color: #0a0e14;
+            transform: scale(1.05);
+        }
+
+        /* skills sliders */
+        .skills-slider-section {
+            background: var(--bg-card);
+            padding: 80px 0;
+        }
+        .skills-slider {
+            overflow: hidden;
+            position: relative;
+            margin-top: 40px;
+        }
+        .skills-track {
+            display: flex;
+            gap: 40px;
+            width: max-content;
+            animation: scrollSkills 30s linear infinite;
+        }
+        .skills-track-reverse {
+            animation: scrollSkillsReverse 30s linear infinite;
+        }
+        .skill-slide {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+        .skill-slide i { font-size: 1.8rem; color: var(--gold); }
+        @keyframes scrollSkills {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollSkillsReverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+        .skills-slider:hover .skills-track,
+        .skills-slider:hover .skills-track-reverse {
+            animation-play-state: paused;
+        }
+
+        /* portfolio gallery */
+        .project-block {
+            margin-bottom: 100px;
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .project-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .company-logo-small {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+        }
+        .project-header h3 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        .project-header .see-more {
+            color: var(--gold);
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .image-grid img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-light);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .image-grid img:hover {
+            transform: scale(1.02);
+            border-color: var(--gold);
+        }
+        .image-grid-item {
+            position: relative;
+        }
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 5;
+        }
+        .lock-icon:hover {
+            background: var(--gold);
+            color: #0a0e14;
+            transform: scale(1.1);
+        }
+
+        /* Pinterest-style modal (masonry grid) */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(10,14,20,0.98);
+            backdrop-filter: blur(16px);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 80px 40px 40px;
+        }
+        .gallery-modal.active { display: block; }
+        .gallery-modal .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 2.5rem;
+            color: var(--gold);
+            cursor: pointer;
+            z-index: 2010;
+            transition: 0.3s;
+        }
+        .gallery-modal .modal-close:hover { transform: rotate(90deg); color: var(--cyan); }
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .masonry-item img {
+            width: 100%;
+            border-radius: 20px;
+            display: block;
+            border: 1px solid var(--border-light);
+            transition: 0.3s;
+        }
+        .masonry-item:hover {
+            transform: scale(1.02);
+        }
+        .masonry-item:hover img {
+            border-color: var(--gold);
+        }
+        @media (max-width: 900px) {
+            .masonry-grid { column-count: 2; }
+        }
+        @media (max-width: 600px) {
+            .masonry-grid { column-count: 1; }
+            .gallery-modal { padding: 70px 20px 20px; }
+        }
+
+        /* request modal */
+        .request-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+        .request-modal.active { display: flex; }
+        .request-content {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 400px;
+            text-align: center;
+        }
+        .request-content input, .request-content textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* toast popup for form success */
+        .toast-popup {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: #0a0e14;
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        .toast-popup i { font-size: 1.2rem; }
+        .toast-popup.show { display: flex; animation: fadeInOut 3s ease forwards; }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        /* testimonials */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .testimonial-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 30px;
+            transition: 0.3s;
+        }
+        .testimonial-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+
+        /* contact with enquiry form */
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .contact-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-card);
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 40px;
+            transition: all 0.4s ease;
+        }
+        .contact-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(212,175,55,0.2);
+        }
+        .contact-card h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--gold), var(--cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .contact-details p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .contact-details i { color: var(--gold); font-size: 1.5rem; }
+        .contact-highlight {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+        .contact-highlight .call-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold), #b89440);
+            color: #0a0e14;
+            padding: 12px 30px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+        .contact-highlight .call-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.4);
+        }
+        .enquiry-form input, .enquiry-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+        .enquiry-form input:focus, .enquiry-form textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.15);
+        }
+        .submit-btn {
+            background: var(--gold);
+            color: #0a0e14;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .submit-btn:hover {
+            background: var(--cyan);
+            transform: scale(1.02);
+        }
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-dim);
+        }
+
+        /* Fullscreen Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-img {
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 16px;
+        }
+        .lightbox-prev, .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: var(--gold);
+            font-size: 3rem;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        .lightbox-prev:hover, .lightbox-next:hover {
+            background: rgba(212,175,55,0.5);
+            color: white;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            color: var(--gold);
+            cursor: pointer;
+            z-index: 10;
+        }
+        @media (max-width: 768px) {
+            .lightbox-prev, .lightbox-next { width: 45px; height: 45px; font-size: 2rem; }
+        }
+
+        @media (max-width: 900px) {
+            .container { padding: 0 20px; }
+            section { padding: 80px 0; }
+            .hero h1 { font-size: 3rem; }
+            .client-card { flex-direction: column; text-align: center; }
+            .edu-grid { grid-template-columns: 1fr; }
+            .roadmap-item { flex-direction: column; }
+            .image-grid { grid-template-columns: 1fr; }
+            .contact-wrapper { grid-template-columns: 1fr; }
+            .skills-track { gap: 20px; }
+            .skill-slide { padding: 8px 20px; font-size: 0.9rem; }
+            .project-title-wrapper { gap: 10px; }
+            .company-logo-small { width: 45px; height: 45px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader-container">
+            <div class="loader-title">Sairam Sontanam</div>
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="percentage" id="progressPercent">0%</div>
+            <div class="tagline">curating premium experiences</div>
+        </div>
+    </div>
+
+    <!-- custom cursor -->
+    <div class="cursor" id="cursor"></div>
+
+    <!-- background shapes -->
+    <div class="scrolling-shapes">
+        <div class="shape shape-a"></div>
+        <div class="shape shape-b"></div>
+        <div class="shape shape-c"></div>
+    </div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Sairam Sontanam</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li><li><a href="#experience">Experience</a></li><li><a href="#education">Education</a></li>
+                <li><a href="#clients">Clients</a></li><li><a href="#portfolio">Work</a></li><li><a href="#contact">Connect</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1 class="glow-text">Sairam Sontanam</h1>
+            <p>digital strategy · brand design · web development</p>
+            <p style="color: var(--cyan); letter-spacing: 0.3em;">crafting premium experiences</p>
+            <a href="#portfolio" class="btn">explore work</a>
+        </div>
+        <div class="scroll-down"><i class="fas fa-chevron-down"></i></div>
+    </section>
+
+    <!-- Skills slider 1: general tools -->
+    <section class="skills-slider-section">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">expertise in motion</h2>
+                <p>tools & technologies</p>
+            </div>
+            <div class="skills-slider">
+                <div class="skills-track" id="skillsTrack"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills slider 2: Adobe tools (reverse direction) -->
+    <section class="skills-slider-section">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">creative arsenal</h2>
+                <p>adobe tools</p>
+            </div>
+            <div class="skills-slider">
+                <div class="skills-track skills-track-reverse" id="adobeTrack"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Experience -->
+    <section id="experience">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">professional experience</h2>
+                <p>career timeline</p>
+            </div>
+            <div class="roadmap">
+                <div class="roadmap-item"><div class="roadmap-year">2025 – present</div><div><h3>Digital lead · Greater Infra Projects</h3><p>Orchestrating ad creatives, digital presence, and website strategy for premium real estate developments across Hyderabad.</p></div></div>
+                <div class="roadmap-item"><div class="roadmap-year">2024 – 2025</div><div><h3>Marketing executive · Gayathri99 Developers</h3><p>Spearheaded Meta campaigns and AI‑assisted video content, generating 500+ qualified leads for residential projects.</p></div></div>
+                <div class="roadmap-item"><div class="roadmap-year">2023 – 2024</div><div><h3>Freelance designer · various brands</h3><p>Delivered brand identities, websites, and campaigns for Inspire Publishers and emerging enterprises.</p></div></div>
+                <div class="roadmap-item"><div class="roadmap-year">2022 – 2023</div><div><h3>Software intern · Upshot.ai</h3><p>Built data dashboards and backend systems for engagement analytics.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education -->
+    <section id="education">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">academics</h2>
+                <p>foundations</p>
+            </div>
+            <div class="edu-grid">
+                <div class="edu-card"><h3>B.Tech CSE</h3><p>JNTU Kakinada · 2017–2022</p></div>
+                <div class="edu-card"><h3>MPC</h3><p>Sri Chaitanya · 2015–2017</p></div>
+                <div class="edu-card"><h3>SSC</h3><p>Pragati Public School · 2015</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients (four clients: Greater Infra, DRS World School, Inspire Publishers, Gayathri99) -->
+    <section id="clients">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">featured clients</h2>
+                <p>partners</p>
+            </div>
+            <div class="clients-vertical">
+                <div class="client-card"><div class="client-icon"><i class="fas fa-building"></i></div><div class="client-info"><h3>Greater Infra Projects</h3><div class="client-meta">real estate · Hyderabad</div><p>Leading developer of luxury residential and commercial spaces.</p><button class="client-btn" data-client="greater">view work</button></div></div>
+                <div class="client-card"><div class="client-icon"><i class="fas fa-school"></i></div><div class="client-info"><h3>DRS World School, Vanasthalipuram</h3><div class="client-meta">education · Hyderabad</div><p>Premier educational institution with a focus on holistic development and academic excellence.</p><button class="client-btn" data-client="drs">view work</button></div></div>
+                <div class="client-card"><div class="client-icon"><i class="fas fa-book"></i></div><div class="client-info"><h3>Inspire Publishers</h3><div class="client-meta">publishing · national</div><p>Independent publisher with a catalog of bestselling titles.</p><button class="client-btn" data-client="inspire">view books</button></div></div>
+                <div class="client-card"><div class="client-icon"><i class="fas fa-city"></i></div><div class="client-info"><h3>Gayathri99 Developers</h3><div class="client-meta">residential · Hyderabad</div><p>Innovative mid‑income housing projects with high customer satisfaction.</p><button class="client-btn" data-client="gayathri">view work</button></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="portfolio">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">selected work</h2>
+                <p>projects</p>
+            </div>
+            <!-- Greater Infra block -->
+            <div class="project-block">
+                <div class="project-header">
+                    <div class="project-title-wrapper">
+                        <img class="company-logo-small" src="https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774694632/Greater_Infra_proejct_logo_1__page-0001_p3fptx.jpg" alt="Greater Infra Logo" onerror="this.src='https://placehold.co/60x60/2c3e50/d4af37?text=GI'">
+                        <h3>Greater Infra Projects</h3>
+                    </div>
+                    <span class="see-more" data-client="greater">see full collection →</span>
+                </div>
+                <div class="image-grid" id="greaterCover"></div>
+            </div>
+            <!-- DRS World School block -->
+            <div class="project-block">
+                <div class="project-header">
+                    <div class="project-title-wrapper">
+                        <img class="company-logo-small" src="https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774694656/DRS_World_School_Vanasthalipuram-Logo_bp1lff.jpg" alt="DRS World School Logo" onerror="this.src='https://placehold.co/60x60/2c3e50/d4af37?text=DRS'">
+                        <h3>DRS World School, Vanasthalipuram</h3>
+                    </div>
+                    <span class="see-more" data-client="drs">see full collection →</span>
+                </div>
+                <div class="image-grid" id="drsCover"></div>
+            </div>
+            <!-- Inspire Publishers block -->
+            <div class="project-block">
+                <div class="project-header">
+                    <div class="project-title-wrapper">
+                        <img class="company-logo-small" src="https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774694789/2e4a19c5-aaa6-4b57-82a3-ebf8e48981be.png" alt="Inspire Publishers Logo" onerror="this.src='https://placehold.co/60x60/2c3e50/d4af37?text=IP'">
+                        <h3>Inspire Publishers</h3>
+                    </div>
+                    <span class="see-more" data-client="inspire">see full collection →</span>
+                </div>
+                <div class="image-grid" id="inspireCover"></div>
+            </div>
+            <!-- Gayathri99 block -->
+            <div class="project-block">
+                <div class="project-header">
+                    <div class="project-title-wrapper">
+                        <img class="company-logo-small" src="https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774694682/images_qmxqpp.png" alt="Gayathri99 Developers Logo" onerror="this.src='https://placehold.co/60x60/2c3e50/d4af37?text=G99'">
+                        <h3>Gayathri99 Developers</h3>
+                    </div>
+                    <span class="see-more" data-client="gayathri">see full collection →</span>
+                </div>
+                <div class="image-grid" id="gayathriCover"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">kind words</h2>
+                <p>client love</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card"><i class="fas fa-quote-left" style="color: var(--gold);"></i><p class="mt-2">Sairam’s ad creatives for Greater Infra brought us 40% more inquiries. Fresh and modern.</p><h4 class="mt-4">— Greater Infra Projects</h4></div>
+                <div class="testimonial-card"><i class="fas fa-quote-left" style="color: var(--gold);"></i><p class="mt-2">The book covers he designed captured exactly our vibe. Highly recommended.</p><h4 class="mt-4">— Inspire Publishers</h4></div>
+                <div class="testimonial-card"><i class="fas fa-quote-left" style="color: var(--gold);"></i><p class="mt-2">He handled our Meta campaigns and website updates flawlessly. Felt like a pro.</p><h4 class="mt-4">— Gayathri "99" Developers </h4></div>
+                <div class="testimonial-card"><i class="fas fa-quote-left" style="color: var(--gold);"></i><p class="mt-2">The creative presence he designed for our school increased admissions by 10% in one year.</p><h4 class="mt-4">— Director, DRS World School</h4></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact with Enquiry Form (AJAX to your email) -->
+    <section id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="glow-text">let's connect</h2>
+                <p>start a conversation</p>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-card">
+                    <h3>reach out directly</h3>
+                    <div class="contact-details">
+                        <p><i class="fas fa-envelope"></i> sairamsontanam@gmail.com</p>
+                        <p><i class="fas fa-phone-alt"></i> +91 91107 08465</p>
+                    </div>
+                    <div class="contact-highlight">
+                        <p style="margin-bottom: 15px;">Let's discuss your vision — call or email, I'll respond within hours.</p>
+                        <a href="tel:+919110708465" class="call-btn"><i class="fas fa-phone-alt"></i> Call Now</a>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <h3>send an enquiry</h3>
+                    <form id="enquiryForm" class="enquiry-form">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Email Address" required>
+                        <input type="tel" name="phone" placeholder="Phone Number">
+                        <textarea name="message" rows="4" placeholder="Tell me about your project..." required></textarea>
+                        <button type="submit" class="submit-btn">Submit Enquiry →</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Sairam Sontanam · premium portfolio</p>
+    </footer>
+
+    <!-- Pinterest-style gallery modals (one per client) -->
+    <div id="modal-greater" class="gallery-modal">
+        <div class="modal-close"><i class="fas fa-times"></i></div>
+        <div class="masonry-grid" id="greaterMasonry"></div>
+    </div>
+    <div id="modal-drs" class="gallery-modal">
+        <div class="modal-close"><i class="fas fa-times"></i></div>
+        <div class="masonry-grid" id="drsMasonry"></div>
+    </div>
+    <div id="modal-inspire" class="gallery-modal">
+        <div class="modal-close"><i class="fas fa-times"></i></div>
+        <div class="masonry-grid" id="inspireMasonry"></div>
+    </div>
+    <div id="modal-gayathri" class="gallery-modal">
+        <div class="modal-close"><i class="fas fa-times"></i></div>
+        <div class="masonry-grid" id="gayathriMasonry"></div>
+    </div>
+
+    <!-- Request Access Modal (for Inspire locked books) -->
+    <div id="requestModal" class="request-modal">
+        <div class="request-content">
+            <i class="fas fa-lock" style="font-size: 3rem; color: var(--gold); margin-bottom: 20px;"></i>
+            <h3>Access via Google Drive</h3>
+            <p>Please fill the form below to request the book PDF. I'll share the link within 24 hours.</p>
+            <input type="text" id="reqName" placeholder="Your Name">
+            <input type="email" id="reqEmail" placeholder="Email">
+            <input type="text" id="reqBook" placeholder="Book Title (optional)">
+            <button onclick="sendRequest()" class="submit-btn" style="margin-top: 15px;">Request Access</button>
+            <button onclick="closeRequestModal()" style="margin-top: 10px; background: none; border: none; color: var(--gold); cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast popup for form success -->
+    <div id="toastPopup" class="toast-popup">
+        <i class="fas fa-check-circle"></i> Thank you for contacting us! I'll get back to you soon.
+    </div>
+
+    <script>
+        (function() {
+            // ========== LOADING SCREEN ==========
+            const loadingScreen = document.getElementById('loadingScreen');
+            const progressFill = document.getElementById('progressFill');
+            const percentSpan = document.getElementById('progressPercent');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 12 + 3;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+                percentSpan.innerText = Math.floor(progress) + '%';
+            }, 80);
+
+            // ========== SKILLS SLIDER 1 ==========
+            const skills = [
+                {icon:'fab fa-meta', name:'Meta Ads'},{icon:'fab fa-instagram', name:'Instagram'},{icon:'fa-brands fa-pinterest', name:'Pinterest'},
+                {icon:'fa-brands fa-linkedin', name:'LinkedIn'},{icon:'fas fa-bullseye', name:'Lead Gen'},{icon:'fab fa-wordpress', name:'WordPress'},
+                {icon:'fab fa-html5', name:'HTML5'},{icon:'fab fa-css3-alt', name:'CSS3'},{icon:'fab fa-js-square', name:'JavaScript'},
+                {icon:'fas fa-palette', name:'Canva'},{icon:'fas fa-video', name:'CapCut'},{icon:'fas fa-chart-pie', name:'Analytics'},
+                {icon:'fas fa-mobile-alt', name:'Responsive'},{icon:'fab fa-figma', name:'Figma'},{icon:'fas fa-ad', name:'Ad Creatives'}
+            ];
+            const track1 = document.getElementById('skillsTrack');
+            if (track1) {
+                [...skills, ...skills].forEach(s => {
+                    let slide = document.createElement('div');
+                    slide.className = 'skill-slide';
+                    slide.innerHTML = `<i class="${s.icon}"></i><span>${s.name}</span>`;
+                    track1.appendChild(slide);
+                });
+            }
+
+            // ========== SKILLS SLIDER 2 (Adobe, reverse direction) ==========
+            const adobeSkills = [
+                {icon:'fab fa-adobe', name:'Photoshop'},{icon:'fab fa-adobe', name:'Illustrator'},{icon:'fab fa-adobe', name:'After Effects'},
+                {icon:'fab fa-adobe', name:'Premiere Pro'},{icon:'fab fa-adobe', name:'Lightroom'},{icon:'fab fa-adobe', name:'Audition'},
+                {icon:'fab fa-adobe', name:'Fresco'},{icon:'fab fa-adobe', name:'Media Encoder'},{icon:'fab fa-adobe', name:'XD'}
+            ];
+            const track2 = document.getElementById('adobeTrack');
+            if (track2) {
+                [...adobeSkills, ...adobeSkills].forEach(s => {
+                    let slide = document.createElement('div');
+                    slide.className = 'skill-slide';
+                    slide.innerHTML = `<i class="${s.icon}"></i><span>${s.name}</span>`;
+                    track2.appendChild(slide);
+                });
+            }
+
+            // ========== IMAGE DATA ==========
+            // Greater Infra images (user provided)
+            const greaterImages = [  "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004275/13_ndzpi7.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004275/16_vmsxjr.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004274/15_ourd0y.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004273/14_p9clzr.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004272/12_tpcars.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004270/11_zgslo2.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004269/9_zp4gjq.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004269/10_jhhqzi.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004268/8_a1cc5s.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004267/1_spudgg.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004267/2_kkqxuj.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004267/7_xwpbdg.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004266/6_qyqbgu.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004262/23_gpw3lv.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004262/21_rbfm89.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004263/22_tu8szh.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004262/20_aq179f.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004254/14_madj3h.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004252/13_mqa6io.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004252/12_sxkrm7.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004251/6_cyplrd.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004251/5_zsnrje.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004251/11_evo1qw.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004250/10_r6btdz.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774004249/24_kazmdu.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693871/13_a4xzbg.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693871/27_teqw1z.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693871/15_hbcuqv.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693869/11_updnlz.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693868/10_hxlimy.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693868/3_io9lym.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693867/7_uakzap.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693865/28_ju9xeb.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693865/23_pkqrza.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693865/29_oacrmh.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693860/17_nmrw2a.png",
+
+            ];
+            // DRS World School images (placeholder – replace with your own)
+            const drsImages = [
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693777/24_36_-POLE_ot2ltj.png",
+                "https://res.cloudinary.com/dsfnpb4v8/image/upload/v1774693776/Add_a_little_bit_of_body_text_ehoxyp.png"
+
+            ];
+            // Inspire Publishers images (placeholder)
+            const inspireImages = [
+                "https://picsum.photos/id/101/500/600",
+                "https://picsum.photos/id/102/500/600",
+                "https://picsum.photos/id/103/500/600",
+                "https://picsum.photos/id/104/500/600"
+            ];
+            // Gayathri99 images (placeholder)
+            const gayathriImages = [
+                "https://picsum.photos/id/105/500/600",
+                "https://picsum.photos/id/106/500/600",
+                "https://picsum.photos/id/107/500/600",
+                "https://picsum.photos/id/108/500/600"
+            ];
+
+            // ========== COVER GRIDS ==========
+            function createCoverGrid(images, containerId, withLock = false) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = images.slice(0,4).map((url, idx) => {
+                    const lockHtml = withLock ? `<div class="lock-icon" onclick="event.stopPropagation(); openRequestModal('Book ${idx+1}')"><i class="fas fa-lock"></i></div>` : '';
+                    return `<div class="image-grid-item" style="position:relative;">
+                                <img src="${url}" onclick="openCarouselFromArray(images, ${idx})">
+                                ${lockHtml}
+                            </div>`;
+                }).join('');
+            }
+            createCoverGrid(greaterImages, 'greaterCover', false);
+            createCoverGrid(drsImages, 'drsCover', false);
+            createCoverGrid(inspireImages, 'inspireCover', true);
+            createCoverGrid(gayathriImages, 'gayathriCover', false);
+
+            // ========== PINTEREST MASONRY GRID FOR MODALS ==========
+            function buildMasonryGrid(images, containerId, withLock = false) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = images.map((url, idx) => {
+                    const lockHtml = withLock ? `<div class="lock-icon" style="position:absolute; top:10px; right:10px;" onclick="event.stopPropagation(); openRequestModal('Book ${idx+1}')"><i class="fas fa-lock"></i></div>` : '';
+                    return `<div class="masonry-item" style="position:relative;" onclick="openCarouselFromArray(images, ${idx})">
+                                <img src="${url}" alt="">
+                                ${lockHtml}
+                            </div>`;
+                }).join('');
+            }
+            buildMasonryGrid(greaterImages, 'greaterMasonry', false);
+            buildMasonryGrid(drsImages, 'drsMasonry', false);
+            buildMasonryGrid(inspireImages, 'inspireMasonry', true);
+            buildMasonryGrid(gayathriImages, 'gayathriMasonry', false);
+
+            // ========== MODAL OPEN/CLOSE (Pinterest gallery) ==========
+            const modals = {
+                greater: document.getElementById('modal-greater'),
+                drs: document.getElementById('modal-drs'),
+                inspire: document.getElementById('modal-inspire'),
+                gayathri: document.getElementById('modal-gayathri')
+            };
+            function openModal(client) {
+                modals[client].classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeModals() {
+                Object.values(modals).forEach(m => m.classList.remove('active'));
+                document.body.style.overflow = 'auto';
+            }
+            document.querySelectorAll('.see-more, .client-btn').forEach(el => {
+                el.addEventListener('click', e => {
+                    const client = e.target.dataset.client;
+                    if (client && modals[client]) openModal(client);
+                });
+            });
+            document.querySelectorAll('.gallery-modal .modal-close').forEach(btn => btn.addEventListener('click', closeModals));
+            window.addEventListener('click', e => { if (e.target.classList.contains('gallery-modal')) closeModals(); });
+
+            // ========== FULLSCREEN CAROUSEL (from any image) ==========
+            let currentCarouselImages = [];
+            let currentCarouselIndex = 0;
+            let touchStartX = 0;
+            function showCarousel() {
+                let lightbox = document.getElementById('lightbox');
+                if (!lightbox) {
+                    lightbox = document.createElement('div');
+                    lightbox.id = 'lightbox';
+                    lightbox.className = 'lightbox';
+                    lightbox.innerHTML = `
+                        <span class="lightbox-close">&times;</span>
+                        <div class="lightbox-container">
+                            <button class="lightbox-prev">◀</button>
+                            <img class="lightbox-img" id="lightbox-img" src="">
+                            <button class="lightbox-next">▶</button>
+                        </div>
+                    `;
+                    document.body.appendChild(lightbox);
+                }
+                document.getElementById('lightbox-img').src = currentCarouselImages[currentCarouselIndex];
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                const prevBtn = lightbox.querySelector('.lightbox-prev');
+                const nextBtn = lightbox.querySelector('.lightbox-next');
+                const closeBtn = lightbox.querySelector('.lightbox-close');
+                const imgEl = document.getElementById('lightbox-img');
+
+                const updateImage = () => { imgEl.src = currentCarouselImages[currentCarouselIndex]; };
+                const nextSlide = () => { currentCarouselIndex = (currentCarouselIndex + 1) % currentCarouselImages.length; updateImage(); };
+                const prevSlide = () => { currentCarouselIndex = (currentCarouselIndex - 1 + currentCarouselImages.length) % currentCarouselImages.length; updateImage(); };
+                const closeLightbox = () => { lightbox.classList.remove('active'); document.body.style.overflow = 'auto'; };
+
+                prevBtn.onclick = (e) => { e.stopPropagation(); prevSlide(); };
+                nextBtn.onclick = (e) => { e.stopPropagation(); nextSlide(); };
+                closeBtn.onclick = closeLightbox;
+                lightbox.onclick = (e) => { if (e.target === lightbox) closeLightbox(); };
+
+                // Swipe
+                const container = lightbox.querySelector('.lightbox-container');
+                container.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+                container.addEventListener('touchend', (e) => {
+                    if (touchStartX === 0) return;
+                    const diff = e.changedTouches[0].clientX - touchStartX;
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) prevSlide();
+                        else nextSlide();
+                    }
+                    touchStartX = 0;
+                });
+                // Keyboard
+                const keyHandler = (e) => {
+                    if (!lightbox.classList.contains('active')) return;
+                    if (e.key === 'ArrowLeft') prevSlide();
+                    if (e.key === 'ArrowRight') nextSlide();
+                    if (e.key === 'Escape') closeLightbox();
+                };
+                document.addEventListener('keydown', keyHandler);
+                lightbox._keyHandler = keyHandler;
+                lightbox.addEventListener('close', () => document.removeEventListener('keydown', keyHandler));
+            }
+            window.openCarouselFromArray = function(images, index) {
+                currentCarouselImages = images;
+                currentCarouselIndex = index;
+                showCarousel();
+            };
+
+            // ========== REQUEST MODAL ==========
+            window.openRequestModal = function(bookTitle) {
+                document.getElementById('reqBook').value = bookTitle;
+                document.getElementById('requestModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            };
+            window.closeRequestModal = function() {
+                document.getElementById('requestModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            };
+            window.sendRequest = function() {
+                const name = document.getElementById('reqName').value;
+                const email = document.getElementById('reqEmail').value;
+                const book = document.getElementById('reqBook').value;
+                if (!name || !email) {
+                    alert('Please fill your name and email.');
+                    return;
+                }
+                alert(`Thank you ${name}! I'll send the access link to ${email} for "${book}" shortly.`);
+                closeRequestModal();
+            };
+
+            // ========== ENQUIRY FORM - AJAX to your email ==========
+            const form = document.getElementById('enquiryForm');
+            const toast = document.getElementById('toastPopup');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                formData.append('_subject', 'New enquiry from portfolio');
+                formData.append('_template', 'table');
+                formData.append('_captcha', 'false');
+                
+                try {
+                    const response = await fetch('https://formsubmit.co/ajax/sairamsontanam@gmail.com', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        toast.classList.add('show');
+                        form.reset();
+                        setTimeout(() => toast.classList.remove('show'), 3000);
+                    } else {
+                        alert('Something went wrong. Please try again or email me directly.');
+                    }
+                } catch (error) {
+                    alert('Network error. Please check your connection or email me directly.');
+                }
+            });
+
+            // ========== CUSTOM CURSOR ==========
+            const cursor = document.getElementById('cursor');
+            if (cursor && window.matchMedia('(pointer: fine)').matches) {
+                document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+                document.querySelectorAll('a, button, .client-btn, .see-more, img, .btn, .contact-btn, .lock-icon, .call-btn, .masonry-item').forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+                });
+            } else if (cursor) cursor.style.display = 'none';
+
+            // ========== SMOOTH SCROLL ==========
+            document.querySelectorAll('a[href^="#"]').forEach(a => {
+                a.addEventListener('click', e => {
+                    e.preventDefault();
+                    const id = a.getAttribute('href');
+                    if(id === '#home') window.scrollTo({top:0, behavior:'smooth'});
+                    else document.querySelector(id)?.scrollIntoView({behavior:'smooth'});
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
